@@ -1,0 +1,43 @@
+definitions:
+  main.Creator:
+    properties:
+      favorited:
+        type: integer
+      id:
+        type: string
+      indexed:
+        type: integer
+      link:
+        type: string
+      name:
+        type: string
+      service:
+        type: string
+      updated:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /creator:
+    get:
+      consumes:
+      - application/json
+      description: Search creators by name
+      parameters:
+      - description: Creator name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Creator'
+            type: array
+      summary: Search creators
+swagger: "2.0"
