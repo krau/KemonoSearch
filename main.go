@@ -2,7 +2,9 @@ package main
 
 import (
 	_ "KemonoSearch/docs"
+	"embed"
 	"fmt"
+	"html/template"
 	"os"
 	"time"
 
@@ -34,6 +36,9 @@ type SearchResult struct {
 var CreatorsFileUrl = "https://kemono.su/api/v1/creators.txt"
 var db *gorm.DB
 
+//go:embed web/templates/*
+var FS embed.FS
+
 func main() {
 	var err error
 	db, err = gorm.Open(gormlite.Open(GetDefaultEnv("KEMONOSEARCH_DB", "creators.db")))
@@ -57,7 +62,8 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
-	router.LoadHTMLGlob("web/templates/*")
+	templ := template.Must(template.New("").ParseFS(FS, "web/templates/*.html"))
+	router.SetHTMLTemplate(templ)
 
 	router.GET("/", func(ctx *gin.Context) {
 		name := ctx.Query("name")
