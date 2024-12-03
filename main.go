@@ -26,6 +26,11 @@ type Creator struct {
 	Favorited int    `json:"favorited"`
 }
 
+type SearchResult struct {
+	SearchQuery string
+	Creators    []Creator
+}
+
 var CreatorsFileUrl = "https://kemono.su/api/v1/creators.txt"
 var db *gorm.DB
 
@@ -51,8 +56,29 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-	router.GET("/creator", SearchCreators)
-	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+	router.LoadHTMLGlob("web/templates/*")
+
+	router.GET("/", func(ctx *gin.Context) {
+		name := ctx.Query("name")
+		var creators []Creator
+		var err error
+		if name != "" {
+			err = db.Where("name LIKE ?", "%"+name+"%").Find(&creators).Error
+		}
+		if err != nil {
+			ctx.HTML(500, "error.html", gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		ctx.HTML(200, "index.html", SearchResult{
+			SearchQuery: name,
+			Creators:    creators,
+		})
+	})
+	router.GET("/api/creator", SearchCreators)
+	router.GET("/api/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	router.Run(GetDefaultEnv("KEMONOSEARCH_ADDR", ":39808"))
 }

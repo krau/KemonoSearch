@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kemono Creators Search</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+        background-color: #f4f4f4;
+      }
+      .search-container {
+        display: flex;
+        margin-bottom: 20px;
+      }
+      #search-input {
+        flex-grow: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: 2px solid #3498db;
+        border-radius: 4px;
+        margin-right: 10px;
+      }
+      #search-btn {
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      #search-btn:hover {
+        background-color: #2980b9;
+      }
+      .creators-list {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+      .creator-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+      }
+      .creator-item:last-child {
+        border-bottom: none;
+      }
+      .creator-info {
+        display: flex;
+        flex-direction: column;
+      }
+      .creator-name {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .creator-details {
+        color: #666;
+        font-size: 0.9em;
+      }
+      .no-results {
+        text-align: center;
+        color: #999;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="search-container">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="搜索创作者"
+        value="{{.SearchQuery}}"
+      />
+      <button id="search-btn">搜索</button>
+    </div>
+
+    <div class="creators-list">
+      {{if .Creators}} {{range .Creators}}
+      <div class="creator-item">
+        <div class="creator-info">
+          <div class="creator-name">{{.Name}}</div>
+          <div class="creator-details">
+            平台：{{.Service}} | 收藏数：{{.Favorited}}
+          </div>
+        </div>
+        <a href="{{.Link}}" target="_blank" class="creator-link">查看主页</a>
+      </div>
+      {{end}} {{else}}
+      <div class="no-results">
+        {{if .SearchQuery}} 没有找到匹配的创作者 {{else}} 输入创作者名称开始搜索
+        {{end}}
+      </div>
+      {{end}}
+    </div>
+
+    <script>
+      document
+        .getElementById("search-btn")
+        .addEventListener("click", function () {
+          var searchQuery = document.getElementById("search-input").value;
+          window.location.href = "/?name=" + encodeURIComponent(searchQuery);
+        });
+
+      document
+        .getElementById("search-input")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            var searchQuery = this.value;
+            window.location.href = "/?name=" + encodeURIComponent(searchQuery);
+          }
+        });
+    </script>
+  </body>
+</html>
